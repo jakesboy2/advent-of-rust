@@ -109,6 +109,6 @@ mod tests {
   fn test_weird_insertion() {
     let input = &mut String::from("seven5seven6sixmdfrtwo");
     let cleaned_line = clean_line_to_digits(input);
-    assert_eq!(cleaned_line, "7seven57seven6sixmdfr2two");
+    assert_eq!(cleaned_line, "7seven57seven66sixmdfr2two");
   }
 }
