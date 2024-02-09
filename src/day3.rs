@@ -258,6 +258,7 @@ fn get_gear_ratio_sum_from_nums(parts: &Vec<Position>, nums: &Vec<Num>) -> i32 {
   sum
 }
 
+#[allow(dead_code)]
 pub fn part_1() {
   let contents = fs::read_to_string("inputs/d3_input.txt")
     .unwrap();
@@ -269,6 +270,7 @@ pub fn part_1() {
   println!("Sum is -> {}", sum);
 }
 
+#[allow(dead_code)]
 pub fn part_2() {
   let contents = fs::read_to_string("inputs/d3_input.txt")
     .unwrap();

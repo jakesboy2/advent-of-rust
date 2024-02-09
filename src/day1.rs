@@ -62,7 +62,7 @@ fn clean_line_to_digits(line: &mut String) -> &mut String {
   return line;
 }
 
-pub fn part_1() {
+pub fn _part_1() {
   let contents = fs::read_to_string("inputs/d1p1_input.txt")
     .unwrap();
 
@@ -76,6 +76,7 @@ pub fn part_1() {
   println!("Sum is -> {}", sum);
 }
 
+#[allow(dead_code)]
 pub fn part_2() {
   let contents = fs::read_to_string("inputs/d1p1_input.txt")
     .unwrap();

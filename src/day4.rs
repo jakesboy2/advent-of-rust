@@ -1,6 +1,7 @@
 use std::{fs, str::FromStr, string::ParseError,};
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 struct Card {
   card_number: i32,
@@ -73,7 +74,7 @@ fn get_points(matching_numbers: i32) -> i32 {
   let exp: u32 = u32::try_from(matching_numbers - 1).unwrap();
   base.pow(exp)
 }
-
+#[allow(dead_code)]
 pub fn part_1() {
   let contents = fs::read_to_string("inputs/test_input.txt")
   .unwrap();
@@ -88,6 +89,7 @@ pub fn part_1() {
   println!("Sum is -> {}", sum);
 }
 
+#[allow(dead_code)]
 pub fn part_2() {
   let contents = fs::read_to_string("inputs/d4_input.txt")
   .unwrap();

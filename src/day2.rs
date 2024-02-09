@@ -67,6 +67,7 @@ impl FromStr for Game {
   }
 }
 
+#[allow(dead_code)]
 pub fn part_1() {
   let red_max = 12;
   let green_max = 13;
@@ -94,6 +95,7 @@ pub fn part_1() {
   println!("Sum is -> {}", sum);
 }
 
+#[allow(dead_code)]
 pub fn part_2() {
   let mut sum = 0;
   let contents = fs::read_to_string("inputs/d2_input.txt")
