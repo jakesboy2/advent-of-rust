@@ -140,6 +140,19 @@ fn create_source_map(map_type: SourceMaps, contents: &str) -> SourceMapDefinitio
   return SourceMapDefinition { maps: range_maps };
 }
 
+fn get_seeds_to_run(
+  seed_to_soil: &SourceMapDefinition,
+  soil_to_fert: &SourceMapDefinition,
+  fert_to_water: &SourceMapDefinition,
+  water_to_light: &SourceMapDefinition,
+  light_to_temp: &SourceMapDefinition,
+  temp_to_humidity: &SourceMapDefinition,
+  humidity_to_location: &SourceMapDefinition,
+  seeds: Vec<SeedRange>
+) -> Vec<i64> {
+  todo!()
+}
+
 pub fn part_1() {
   let contents = fs::read_to_string("inputs/d5_input.txt")
     .unwrap();
@@ -181,20 +194,8 @@ pub fn part_1() {
   println!("Lowest value -> {}", lowest_value);
 }
 
-/*
-  General Idea to make this better
-  Don't check every seed!
-  We can simply check the "boundaries" of the rules because those are the places that the lowest is going to be found
-  Create a list of "special" seeds at each of the boundaries (ie 50 20 3) -> check "20" and "23"
-  Create a "prev" function to walk back and get a seed from a specific boundary
-  
-  on each source map when we create it, take a second to store a vec of the "seeds" to check for that mapping
-  we can take these and combine them in the main fn
-
-  also check all "base" seeds
-*/
 pub fn part_2() {
-  let contents = fs::read_to_string("inputs/d5_input.txt")
+  let contents = fs::read_to_string("inputs/d5_test_input.txt")
     .unwrap();
   
   let seed_line = contents.lines().next().unwrap();
@@ -208,30 +209,38 @@ pub fn part_2() {
   let temp_to_humidity = create_source_map(SourceMaps::TempToHumidity, &contents);
   let humidity_to_location = create_source_map(SourceMaps::HumidityToLocation, &contents);
 
+  let all_seeds_to_run = get_seeds_to_run(
+    &seed_to_soil, 
+    &soil_to_fert, 
+    &fert_to_water, 
+    &water_to_light, 
+    &light_to_temp, 
+    &temp_to_humidity, 
+    &humidity_to_location, 
+    seed_ranges
+  );
+  
   let mut lowest_value = 0;
-  for (i, seed_range) in seed_ranges.iter().enumerate() {
-    let max = seed_range.start + seed_range.range;
-    for seed in seed_range.start..max {
-      let value = humidity_to_location.next(
-        &temp_to_humidity.next(
-          &light_to_temp.next(
-            &water_to_light.next(
-              &fert_to_water.next(
-                &soil_to_fert.next(
-                  &seed_to_soil.next(&seed)
-                )
+  for seed in all_seeds_to_run {
+    let value = humidity_to_location.next(
+      &temp_to_humidity.next(
+        &light_to_temp.next(
+          &water_to_light.next(
+            &fert_to_water.next(
+              &soil_to_fert.next(
+                &seed_to_soil.next(&seed)
               )
             )
           )
         )
-      );
+      )
+    );
 
-      if lowest_value == 0 {
-        lowest_value = value;
-      }
-      else if lowest_value > value {
-        lowest_value = value;
-      }
+    if lowest_value == 0 {
+      lowest_value = value;
+    }
+    else if lowest_value > value {
+      lowest_value = value;
     }
   }
 
