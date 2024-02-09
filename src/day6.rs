@@ -100,6 +100,7 @@ pub fn part_1() {
   println!("Final Result -> {}", result.unwrap());
 }
 
+#[allow(dead_code)]
 pub fn part_2() {
   let before = Instant::now();
   let contents = fs::read_to_string("inputs/d6_input.txt")
