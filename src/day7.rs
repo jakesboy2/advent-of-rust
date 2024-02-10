@@ -67,14 +67,29 @@ impl HandResult {
   }
 
   pub fn check_full_house(hand: &Vec<char>) -> bool {
-    let mut hand_map: HashMap<char, i32>  = HashMap::new();
+    let mode_char = mode(&hand);
+    let mut updated_hand = Vec::<char>::new();
     for i in hand {
+      if i == &'J' {
+        updated_hand.push(mode_char);
+      }
+      else {
+        updated_hand.push(*i);
+      }
+    }
+
+    let mut hand_map: HashMap<char, i32>  = HashMap::new();
+    for i in &updated_hand {
       if hand_map.contains_key(i) {
         *hand_map.get_mut(i).unwrap() += 1;
       }
       else {
         hand_map.insert(*i, 1);
       }
+    }
+    
+    if hand_map.iter().skip(1).next().is_none() {
+      return false;
     }
     
     let first_value = hand_map.iter().next().unwrap().1;
@@ -114,6 +129,12 @@ impl HandResult {
   }
 
   pub fn check_two_pair(hand: &Vec<char>) -> bool {
+    if HandResult::check_one_pair(hand) {
+      if hand.contains(&'J') {
+        return true;
+      }
+    }
+
     let mut pairs = 0;
     for card in hand {
       let mut num_matches = 0;
@@ -134,6 +155,10 @@ impl HandResult {
   }
 
   pub fn check_one_pair(hand: &Vec<char>) -> bool {
+    if hand.contains(&'J') {
+      return true;
+    }
+
     let mut count;
     for i in 0..hand.len() {
       let comparing_element = hand.get(i).unwrap();
@@ -287,7 +312,7 @@ fn print_all_for_debug(sorted_hands: &Vec<Hand>) {
 
 pub fn part_1() {
   let before = Instant::now();
-  let contents = fs::read_to_string("inputs/d7_test_input.txt")
+  let contents = fs::read_to_string("inputs/d7_input.txt")
     .unwrap();
 
   let mut hands = Vec::<Hand>::new();
@@ -302,6 +327,8 @@ pub fn part_1() {
     let hand_value = mult * hand.bet;
     sum += hand_value;
   }
+
+  print_all_for_debug(&sorted_hands);
 
   println!("Sum is -> {}", sum);
   println!("Executed in {:?}", before.elapsed());
@@ -355,6 +382,27 @@ mod tests {
     let three_of_kind_with_jokers = vec!['K', 'J', 'J', '2', '1'];
     let is_tok = HandResult::check_three_of_a_kind(&three_of_kind_with_jokers);
     assert_eq!(is_tok, true);
+  }
+
+  #[test]
+  fn test_two_pair_with_jokers() {
+    let two_pairs_with_jokers = vec!['K', 'J', 'J', '2', '1'];
+    let is_two_pair = HandResult::check_two_pair(&two_pairs_with_jokers);
+    assert_eq!(is_two_pair, true);
+  }
+
+  #[test]
+  fn test_one_pair_with_jokers() {
+    let one_pair_with_jokers = vec!['K', '1', '2', '3', 'J'];
+    let is_one_pair = HandResult::check_one_pair(&one_pair_with_jokers);
+    assert_eq!(is_one_pair, true);
+  }
+
+  #[test]
+  fn test_is_full_house_with_jokers() {
+    let full_house_with_jokers = vec!['K', 'K', '2', '2', 'J'];
+    let is_full_house = HandResult::check_full_house(&full_house_with_jokers);
+    assert_eq!(is_full_house, true);
   }
 
   #[test]
