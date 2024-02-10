@@ -12,20 +12,47 @@ enum HandResult {
   HighCard
 }
 
+fn mode(vec_to_mode: &Vec<char>) -> char {
+  let mut occurrences = HashMap::new();
+
+  for &value in vec_to_mode {
+    if value == 'J' {
+      continue;
+    }
+    *occurrences.entry(value).or_insert(0) += 1;
+  }
+
+  occurrences
+    .into_iter()
+    .max_by_key(|&(_, count)| count)
+    .map(|(val, _)| val)
+    .expect("Cannot compute the mode of zero numbers")
+}
+
 impl HandResult {
   pub fn check_five_of_a_kind(hand: &Vec<char>) -> bool {
     let first_element = hand.get(0).unwrap();
-    let result = hand.iter().all(|x| x == first_element);
+    let result = hand.iter().all(|x| x == first_element || x == &'J');
     result
   }
 
   pub fn check_four_of_a_kind(hand: &Vec<char>) -> bool {
+    let mode_char = mode(&hand);
+    let mut updated_hand = Vec::<char>::new();
+    for i in hand {
+      if i == &'J' {
+        updated_hand.push(mode_char);
+      }
+      else {
+        updated_hand.push(*i);
+      }
+    }
     let mut count;
-    for i in 0..hand.len() {
-      let comparing_element = hand.get(i).unwrap();
+    for i in 0..updated_hand.len() {
+      let comparing_element = updated_hand.get(i).unwrap();
       count = 0;
-      for j in 0..hand.len() {
-        let curr_element = hand.get(j).unwrap();
+      for j in 0..updated_hand.len() {
+        let curr_element = updated_hand.get(j).unwrap();
         if curr_element == comparing_element {
           count += 1;
         }
@@ -56,12 +83,23 @@ impl HandResult {
   }
 
   pub fn check_three_of_a_kind(hand: &Vec<char>) -> bool {
+    let mode_char = mode(&hand);
+    let mut updated_hand = Vec::<char>::new();
+    for i in hand {
+      if i == &'J' {
+        updated_hand.push(mode_char);
+      }
+      else {
+        updated_hand.push(*i);
+      }
+    }
+
     let mut count;
-    for i in 0..hand.len() {
-      let comparing_element = hand.get(i).unwrap();
+    for i in 0..updated_hand.len() {
+      let comparing_element = updated_hand.get(i).unwrap();
       count = 0;
-      for j in 0..hand.len() {
-        let curr_element = hand.get(j).unwrap();
+      for j in 0..updated_hand.len() {
+        let curr_element = updated_hand.get(j).unwrap();
         if curr_element == comparing_element {
           count += 1;
         }
@@ -296,5 +334,33 @@ mod tests {
     let full_house = vec!['3', '3', '3', '2', '2'];
     let is_full_house = HandResult::check_full_house(&full_house);
     assert_eq!(is_full_house, true);
+  }
+
+  #[test]
+  fn test_five_of_kind_with_jokers() {
+    let five_of_kind_with_jokers = vec!['K', 'K', 'J', 'J', 'K'];
+    let is_fok = HandResult::check_five_of_a_kind(&five_of_kind_with_jokers);
+    assert_eq!(is_fok, true);
+  }
+
+  #[test]
+  fn test_four_of_kind_with_jokers() {
+    let four_of_kind_with_jokers = vec!['K', 'K', 'J', 'J', '1'];
+    let is_fok = HandResult::check_four_of_a_kind(&four_of_kind_with_jokers);
+    assert_eq!(is_fok, true);
+  }
+
+  #[test]
+  fn test_three_of_kind_with_jokers() {
+    let three_of_kind_with_jokers = vec!['K', 'J', 'J', '2', '1'];
+    let is_tok = HandResult::check_three_of_a_kind(&three_of_kind_with_jokers);
+    assert_eq!(is_tok, true);
+  }
+
+  #[test]
+  fn test_mode() {
+    let test = vec!['K', 'K', 'J', '5', '3'];
+    let result = mode(&test);
+    assert_eq!(result, 'K');
   }
 }
