@@ -22,6 +22,10 @@ fn mode(vec_to_mode: &Vec<char>) -> char {
     *occurrences.entry(value).or_insert(0) += 1;
   }
 
+  if occurrences.len() == 0 {
+    return 'J';
+  }
+
   occurrences
     .into_iter()
     .max_by_key(|&(_, count)| count)
@@ -31,8 +35,19 @@ fn mode(vec_to_mode: &Vec<char>) -> char {
 
 impl HandResult {
   pub fn check_five_of_a_kind(hand: &Vec<char>) -> bool {
-    let first_element = hand.get(0).unwrap();
-    let result = hand.iter().all(|x| x == first_element || x == &'J');
+    let mode_char = mode(&hand);
+    let mut updated_hand = Vec::<char>::new();
+    for i in hand {
+      if i == &'J' {
+        updated_hand.push(mode_char);
+      }
+      else {
+        updated_hand.push(*i);
+      }
+    }
+
+    let first_element = updated_hand.get(0).unwrap();
+    let result = updated_hand.iter().all(|x| x == first_element);
     result
   }
 
@@ -91,7 +106,7 @@ impl HandResult {
     if hand_map.iter().skip(1).next().is_none() {
       return false;
     }
-    
+
     let first_value = hand_map.iter().next().unwrap().1;
     let second_value = hand_map.iter().skip(1).next().unwrap().1;
     return (first_value == &2 && second_value == &3) || (first_value == &3 && second_value == &2);
@@ -129,10 +144,8 @@ impl HandResult {
   }
 
   pub fn check_two_pair(hand: &Vec<char>) -> bool {
-    if HandResult::check_one_pair(hand) {
-      if hand.contains(&'J') {
-        return true;
-      }
+    if hand.contains(&'J') {
+      return false;
     }
 
     let mut pairs = 0;
@@ -310,6 +323,7 @@ fn print_all_for_debug(sorted_hands: &Vec<Hand>) {
   }
 }
 
+#[allow(dead_code)]
 pub fn part_1() {
   let before = Instant::now();
   let contents = fs::read_to_string("inputs/d7_input.txt")
@@ -403,6 +417,20 @@ mod tests {
     let full_house_with_jokers = vec!['K', 'K', '2', '2', 'J'];
     let is_full_house = HandResult::check_full_house(&full_house_with_jokers);
     assert_eq!(is_full_house, true);
+  }
+
+  #[test]
+  fn test_is_five_of_a_kind_with_jokers() {
+    let five_of_a_kind_with_jokers = vec!['J', 'J', 'Q', 'Q', 'Q'];
+    let is_five_of_a_kind = HandResult::check_five_of_a_kind(&five_of_a_kind_with_jokers);
+    assert_eq!(is_five_of_a_kind, true);
+  }
+
+  #[test]
+  fn test_two_pair_fail() {
+    let two_pair_joker = vec!['J', '5', '2', 'A', '9'];
+    let is_two_pair = HandResult::check_two_pair(&two_pair_joker);
+    assert_eq!(is_two_pair, false);
   }
 
   #[test]
