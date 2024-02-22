@@ -96,12 +96,9 @@ pub fn part_2() {
   let directions = create_directions(&contents);
   let map = create_map(&contents);
 
-  // infinite looping?
-  // find out why!
 
-  let mut sum = 0;
   let directions_len = directions.len();
-  let mut curr_keys = get_keys_ending_in_a(&map);
+  let curr_keys = get_keys_ending_in_a(&map);
   println!("{:?}", curr_keys);
   let mut distances = Vec::<i32>::new();
   for key in curr_keys {
