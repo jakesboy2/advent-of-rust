@@ -77,7 +77,7 @@ pub fn part_1() {
     };
     sum += 1;
 
-        if new_key == "ZZZ" {
+    if new_key == "ZZZ" {
       break;
     }
 
@@ -103,21 +103,29 @@ pub fn part_2() {
   let directions_len = directions.len();
   let mut curr_keys = get_keys_ending_in_a(&map);
   println!("{:?}", curr_keys);
+  let mut distances = Vec::<i32>::new();
   for key in curr_keys {
-  /*
-    solve for each point starting with A, how long until Z.
-    Store that value in a vector `distances`
+    let mut sum = 0;
+    let mut curr = map.get(key).unwrap();
+    loop {
+      let curr_dir = directions.get(sum % directions_len).unwrap();
+      let new_key: String;
+      match curr_dir {
+        Direction::Left => new_key = curr.left.clone(),
+        Direction::Right => new_key = curr.right.clone()
+      };
+      sum += 1;
 
-    for each distance in distances
-    break into prime number factorization, e.g. 2^3 * 3^2 * 7^1 or something
-
-
-    find the max power of each prime number out of all distances
-
-    solve for prime^power * prime^power ... 
-  */
+      if new_key.ends_with("Z") {
+        distances.push(sum as i32);
+        break;
+      }
+  
+      curr = map.get(&String::from(new_key)).unwrap();
+    }
   }
 
-  println!("Sum is -> {}", sum);
+  // Go find LCM online and that's your answer lol
+  println!("{:?}", distances);
   println!("Executed in {:?}", before.elapsed());
 }
